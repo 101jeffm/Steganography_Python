@@ -23,7 +23,7 @@ def embed_msg_len(msg):
     
 etxVal = "00000011"         # This is the value to know when the end of the message is.
 message = input("Enter the message to encode: ").encode()
-msgLenBin = bin(len(message))[2:].zfill(4)
+msgLenBin = bin(len(message))[2:].zfill(8)
 binMessage = bin(int(binascii.hexlify(message), 16))[2:].zfill(len(message)*8)
 fileName = input("Enter the file name: ").encode()
 inputFile = open(fileName, 'r')
@@ -34,7 +34,7 @@ with inputFile as inf:
         j = 0
         opf.write(inf.readline())
         for line in islice(inf, 1, None):
-            if i < 4:      # The first 4 blue values encoded will be the binary representation of the message length.
+            if i < 8:      # The first 8 blue values encoded will be the binary representation of the message length.
                 encodedLine = encode_line(line, msgLenBin[i])
                 opf.write(encodedLine + "\n")
                 i += 1
