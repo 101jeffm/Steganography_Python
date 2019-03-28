@@ -2,37 +2,34 @@ import binascii
 from itertools import islice
 
 
-def hex2dec(hexVal):
-    decVal = int(hexVal, 16)
-    return decVal
+def hex2dec(hexVal):                # Function that converts a hex string to a decimal integer
+    decVal = int(hexVal, 16)        # Converts a hex string to a decimal integer
+    return decVal                   # Returns the decimal integer
 
 
-def encode_line(line, mb):  # mb is the message bit
-    decLine = hex2dec(line)
-    if decLine % 2 != int(mb) and mb == '0':
+def encode_line(line, mb):                          # Encodes one pixel. mb is the bit being encoded
+    decLine = hex2dec(line)                         # Converts the pixel line to a decimal value
+    if decLine % 2 != int(mb) and mb == '0':        # Encodes a 0 if mb is a 0
         encDecLine = decLine - 1
-    elif decLine % 2 != int(mb) and mb == '1':
+    elif decLine % 2 != int(mb) and mb == '1':      # Encodes a 1 if mb is a 1
         encDecLine = decLine + 1
     else:
-        encDecLine = decLine
-    return hex(encDecLine)[2:]
+        encDecLine = decLine                        # Leaves the line the same as it was because it already has the needed value
+    return hex(encDecLine)[2:]                      # Returns the encoded line in hex
+    
 
-
-def embed_msg_len(msg):
-    mLenBin = bin(len(msg))[2:].xfill(4)
-
-def superencode_line(fileName):
-    message = raw_input("Enter the message to encode: ").encode()
-    msgLenBin = bin(len(message))[2:].zfill(8)
-    binMessage = bin(int(binascii.hexlify(message), 16))[2:].zfill(len(message) * 8)
-    inputFile = open(fileName, 'r')
-    outputFile = open('EncodedImg.txt', 'w')
-    with inputFile as inf:
-        with outputFile as opf:
-            i = 0
-            j = 0
-            opf.write(inf.readline())
-            for line in islice(inf, 1, None):
+def superencode_line(fileName):                                         # The primary function that opens and manages the message and files
+    message = raw_input("Enter the message to encode: ").encode()       # Gets the message from the user
+    msgLenBin = bin(len(message))[2:].zfill(8)                          # Converts the message length to binary
+    binMessage = bin(int(binascii.hexlify(message), 16))[2:].zfill(len(message) * 8)        # Converts the message to binary
+    inputFile = open(fileName, 'r')                                     # Opens the input file
+    outputFile = open('EncodedImg.txt', 'w')                            # Opens the output file
+    with inputFile as inf:                                              # Does the following code with the input file open
+        with outputFile as opf:                                         # Does the following code with the output file open
+            i = 0                                                       # Used for a count
+            j = 0                                                       # Used for a count
+            opf.write(inf.readline())                                   # Writes the first line to the output file (because it is not a pixel)
+            for line in islice(inf, 1, None):                           # A for loop for each line of the input file starting with the second line
                 if i < 8:  # The first 4 blue values encoded will be the binary representation of the message length.
                     encodedLine = encode_line(line, msgLenBin[i])
                     opf.write(encodedLine + "\n")
@@ -46,5 +43,5 @@ def superencode_line(fileName):
     inputFile.close()
     outputFile.close()
 
-bruh = raw_input("Enter the file to encode: ")
-superencode_line(bruh)
+fileName = raw_input("Enter the file to encode: ")
+superencode_line(fileName)
