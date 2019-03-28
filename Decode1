@@ -1,0 +1,56 @@
+import math
+import binascii
+
+def decode_linelen(filename): #Takes the filename as the input
+    alist = [] #This is the array that will be used for holding the appropriate bit
+    inputFile1 = open(filename, 'r') #Takes the file parameter and opens the file for reading
+    linenumber = 0 #This number is simply used to see how many pixels will be read
+    length = messagelength(filename) #Calls upon the length function to find the specific length.
+    for each_line in inputFile1: #For each line in the file, we will run this function to find the binary value
+        pixel = each_line; #Set this variable equal to each line, or the pixel
+        if (len(pixel) > 10): #Simply checks if the value is more than 8 characters, meaning it is not a pixel
+            print("Not a pixel, line ignored.") #Not a pixel, this will be ignored
+            print(pixel) #Print out the pixel ignored
+        elif int(linenumber) >= 8: #The first 4 pixels will be used for length
+            last = pixel[-2:-1] #Since we are using blue, we wil be popping off the last few
+            if last in ["0", "2", "4", "6", "8", "a", "c", "e"]: #Since these hex values end with 0,
+                alist.append(0) #append a 0 to our alist char array
+            if last in ["1", "3", "5", "7", "9", "b", "d", "f"]: #Since these hex values end with 1,
+                alist.append(1) #append a 1 to our alist char array
+            linenumber = linenumber + 1 #This is just to count the amount of pixles
+        else: #Just to count the first 4
+            linenumber = linenumber + 1 #Counts the first 4
+    str1 = ''.join(str(e) for e in alist) #Joins the character array into a string
+    x = ''.join(chr(int(str1[i:i + 8], 2)) for i in xrange(0, len(str1), 8)) #Joins the array again
+    #Every 8 values, group them together into one string and then convert the binary to an int then a char
+    #print(x[0:length]) #Print the value out to the length, so that it only goes to the message length
+    print('The message is', x[0:length]) #Just saying what the message is again
+    print('With ', linenumber, ' pixels') #In how many pixels it took
+    return
+
+def messagelength(filename):
+    print("Finding length of message") #Just for reference
+    length = [] #Since the length is only in the first 4 pixels, and I'm converting to ASCII, I need the beginning 4
+    inputFile1 = open(filename, 'r') #Opens the file up for reading
+    linenumber = 0 #Keeps track of which line we are on
+    for each_line in inputFile1: #For each line in the file
+        pixel = each_line; #Set the line in the pixel string
+        if (len(pixel) > 10):  #If the pixel is over 10 (8 char + /n), it's not a pixel
+            print("Not a pixel, line ignored: ", pixel)
+        elif int(linenumber) in range(0, 8): #Since it is only the first four lines, then only record for the first four
+            last = pixel[-2:-1] #Pop off the last pixel
+            if last in ["0", "2", "4", "6", "8", "a", "c", "e"]: #If it's one of these hex values, meaning it ends with a 0
+                length.append(0) #Then append 0
+            if last in ["1", "3", "5", "7", "9", "b", "d", "f"]: #If it's one of the hex values ending with a 1
+                length.append(1) #Then append 1
+            linenumber = linenumber + 1 #Add up the line number
+    while len(length) < 8: #If the array is not long enough to be a full ascii
+        length.insert(0, 0) #Then insert 0s
+    str1 = ''.join(str(e) for e in length) #Combine the character array into one string
+    x = int(str1, 2) #Convert the binary string to an integer
+    #print(str1) #Print out the binary
+    print("length of message is ", x) #Print out the length
+    return x #Return this, just in case the function is looking for it.
+
+bruh = raw_input("Enter the name of the file: ")
+decode_linelen(bruh)
